@@ -16,4 +16,14 @@ public class SwerveModule
         one.calculatePID(-getY);
         two.calculatePID(getY);
     }
+    public void updatePID(Spark motor, double newP, double newI, double newD, double newIZ, double newFF){
+        motor.updatePID(newP, newI, newD, newIZ, newFF);
+    }
+    public Spark getMotor(int number){
+        if(number == 1){
+            return one;
+        }else{
+            return two;
+        }
+    }
 }

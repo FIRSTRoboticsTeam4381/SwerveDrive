@@ -58,10 +58,13 @@ public class Spark
         m_motor.setInverted(inverted);
     }
     
-    public void updatePID(double newP, double newI, double newD, double newIZ){
-
-
-
+    public void updatePID(double newP, double newI, double newD, double newIZ, double newFF){
+        SmartDashboard.putNumber("P Gain", newP);
+        SmartDashboard.putNumber("I Gain", newI);
+        SmartDashboard.putNumber("D Gain", newD);
+        SmartDashboard.putNumber("I Zone", newIZ);
+        SmartDashboard.putNumber("Feed Forward", newFF);
+        
     }
 
     public void calculatePID( double getY) {
