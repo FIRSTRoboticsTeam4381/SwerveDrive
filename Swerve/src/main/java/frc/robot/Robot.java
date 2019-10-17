@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
+import java.util.Timer;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -17,12 +20,16 @@ public class Robot extends IterativeRobot
     private String m_autoSelected;
     private  SendableChooser<String> m_chooser;
     private Joystick m_DriveStick;
+    
     private double y;
     private SwerveModule FR;
-    
+   
+
+
     public Robot() {
         //m_chooser = (SendableChooser<String>)new SendableChooser();
         m_DriveStick = new Joystick(0);
+        
     }
     
     public void robotInit() {
@@ -30,9 +37,13 @@ public class Robot extends IterativeRobot
         //m_chooser.addOption("My Auto", (Object)"My Auto");
         //SmartDashboard.putData("Auto choices", (Sendable)m_chooser);
         FR = new SwerveModule(48, 50);
+        y = 0;
+        
+      
     }
     
     public void robotPeriodic() {
+       
     }
     
     public void autonomousInit() {
@@ -47,14 +58,29 @@ public class Robot extends IterativeRobot
     }
     
     public void teleopPeriodic() {
-        if (m_DriveStick.getY() < 0.15 && m_DriveStick.getY() > -0.15) {
-            y = 0.0;
+        
+        SmartDashboard.putNumber("Timer", System.currentTimeMillis());
+        SmartDashboard.putNumber("Power", y);
+        if(System.currentTimeMillis() == 0){
+            y = 0.2;
         }
-        else {
-            y = m_DriveStick.getY();
+        if(System.currentTimeMillis() == 2000){
+            y = 0.4;
         }
-        SmartDashboard.putNumber("Joystick", y);
+        if(System.currentTimeMillis() == 3000){
+            y = 0.6;
+        }
+        if(System.currentTimeMillis() == 4000){
+            y = 0.8;
+        } 
+        if(System.currentTimeMillis() == 5000){
+            y = 1.0;
+        }
+
         FR.runPID(y);
+        
+
+
     }
     
     public void testPeriodic() {
