@@ -1,0 +1,125 @@
+package frc.robot;
+
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSourceType;
+
+public class SwerveModule implements edu.wpi.first.wpilibj.PIDSource
+{
+    private Spark one;
+    private Spark two;
+    private PIDController pidControl;
+    private double targetAngle;
+    private double Kp = 0.002;
+    private double Ki = 0;
+    private double Kd = 0;
+    private double rotation;
+    private PIDOutput output;
+    private double max = 0.8;
+
+    public SwerveModule( int deviceID1,  int deviceID2)  {
+        one = new Spark(deviceID1);
+        two = new Spark(deviceID2);
+        one.setPIDcoefficients();
+        two.setPIDcoefficients();
+        pidControl = new PIDController(Kp, Ki, Kd, this, this::SetRotation);
+        pidControl.setInputRange(0, 360);
+        pidControl.setOutputRange(-1, 1);
+        pidControl.setContinuous();
+        pidControl.setAbsoluteTolerance(0.1);
+        pidControl.setSetpoint(0);
+        pidControl.reset();
+        pidControl.enable();
+        
+        //one.setTurnPIDcoefficients();
+        //two.setTurnPIDcoefficients();
+    }
+    
+    public void SetRotation (double output){
+        rotation = output;
+      }
+
+    public void angle(double angle){
+        pidControl.setSetpoint(angle);
+    }
+
+    public void runPID( double getY1, double getY2) {
+        one.calculatePID(-getY1);
+        two.calculatePID(getY2);
+    }
+    public void runTurnPID(){
+        one.turnPID();
+        two.turnPID();
+    }
+    public void updatePID(Spark motor, double newP, double newI, 
+    double newD, double newIZ, double newFF, double newMaxOutput, double newMinOutput){
+        motor.updatePID(newP, newI, newD, newIZ, newFF, newMaxOutput, newMinOutput);
+    }
+    public void updateTurnPID(Spark motor, double newP, double newI, 
+    double newD, double newIZ, double newFF, double newMaxOutput, double newMinOutput, double rotations){
+        motor.updateTurnPID(newP, newI, newD, newIZ, newFF, newMaxOutput, newMinOutput, rotations);
+    }
+    public Spark getMotor(int number){
+        if(number == 1){
+            return one;
+        }else{
+            return two;
+        }
+    }
+
+    public double getAngle(Spark one, Spark two){
+        double diff = one.ticks() + two.ticks();
+        diff = (diff % 10) * 36;
+        return diff;
+    }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
+
+    }
+
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return PIDSourceType.kRate;
+    }
+
+    @Override
+    public double pidGet() {
+        return getAngle(one, two);
+    }
+    
+    public double getY1(double mainY, double targetAngle){
+        double y1 = 0;
+        double y2 = 0;
+        
+        if(targetAngle != -1){
+            y2 = (mainY*max) + rotation;
+            y1 = mainY*max;
+        }else{
+            y1 = mainY*max;
+            y2 = mainY*max;
+        }
+        
+
+        return y1;
+
+    }
+
+    public double getY2(double mainY, double targetAngle){
+        double y1 = 0;
+        double y2 = 0;
+
+        
+        if(targetAngle != -1){
+            y2 = (mainY*max) + rotation;
+            y1 = mainY*max;
+        }else{
+            y1 = mainY*max;
+            y2 = mainY*max;
+        }
+
+        return y2;
+
+    }
+
+    }
