@@ -52,15 +52,15 @@ public class Robot extends IterativeRobot
         long elapsedtime = System.currentTimeMillis() - starttime;
         SmartDashboard.putNumber("Timer", elapsedtime);
         
-        if(m_DriveStick.getY() < 0.01 && m_DriveStick.getY() > -0.01){
+        if(m_DriveStick.getY() < 0.1 && m_DriveStick.getY() > -0.1){
             y = 0;
         }else{
-            y = m_DriveStick.getY();
+            y = m_DriveStick.getY() * m_DriveStick.getThrottle();
         }
 
 
 
-        drivetrain.runPID(y, m_DriveStick.getPOV(), m_DriveStick.getRawButton(1), m_DriveStick.getRawButton(2));
+        drivetrain.runPID(-y, m_DriveStick.getPOV(), m_DriveStick.getRawButton(1), m_DriveStick.getRawButton(2));
     
 
         

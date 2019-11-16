@@ -19,7 +19,7 @@ public class Drivetrain
         FR = new SwerveModule(50, 48);
         FL = new SwerveModule(57, 52);
         BR = new SwerveModule(60, 51);
-        BL = new SwerveModule(62, 53);
+        BL = new SwerveModule(62, 55);
 
         FR.updatePID(FR.getMotor(2), V.FR48("p"), V.FR48("i"), V.FR48("d"), 
         V.FR48("iz"), V.FR48("ff"), V.FR48("max"), V.FR48("min"));
@@ -52,18 +52,25 @@ public class Drivetrain
         //if using Z axis angle = inAngle * 360
         angle = inAngle;
 
+        FR.getYs(y, angle);
+        FL.getYs(y, angle);
+        BR.getYs(y, angle);
+        BL.getYs(y, angle);
+
         if(stop){
             FR.runPID(0, 0);
             FL.runPID(0, 0);
             BR.runPID(0, 0);
             BL.runPID(0, 0);
         }else{ 
-            FR.runPID(FR.getY1(-y, angle), FR.getY2(-y, angle));
-            FL.runPID(FL.getY1(y, angle), FL.getY2(y, angle));
-            BR.runPID(BR.getY1(y, angle), BR.getY2(y, angle));
-            BL.runPID(BL.getY1(y, angle), BL.getY2(y, angle));
+            FR.runPID(FR.y1, FR.y2);
+            FL.runPID(FL.y1, FL.y2);
+            BR.runPID(BR.y1, BR.y2);
+            BL.runPID(BL.y1, BL.y2);
         }
         
+    
+        SmartDashboard.putNumber("inangle", inAngle);
         FR.angle(inAngle);
         FL.angle(inAngle);
         BR.angle(inAngle);
@@ -76,8 +83,13 @@ public class Drivetrain
             reset(BL);
         }
 
+
+        SmartDashboard.putNumber("BL vel1", BL.getMotor(1).velo());
+        SmartDashboard.putNumber("BL vel2", BL.getMotor(2).velo());
         SmartDashboard.putNumber("FR difference",  FR.getMotor(2).velo() + FR.getMotor(1).velo());
+       
         SmartDashboard.putNumber("FR getAngle", FR.getAngle(FR.getMotor(2), FR.getMotor(1)));
+      
         SmartDashboard.putNumber("FL difference",  FL.getMotor(2).velo() + FL.getMotor(1).velo());
         SmartDashboard.putNumber("FL getAngle", FL.getAngle(FL.getMotor(2), FL.getMotor(1)));
         SmartDashboard.putNumber("BR difference",  BR.getMotor(2).velo() + BR.getMotor(1).velo());

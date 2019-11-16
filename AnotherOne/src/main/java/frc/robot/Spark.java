@@ -28,7 +28,7 @@ public class Spark
     private double kMinOutput;
     private double maxRPM;
     private double deviceid;
-    
+    private double setPoint;
     public Spark( int deviceID) {
         m_motor = new CANSparkMax(deviceID, CANSparkMaxLowLevel.MotorType.kBrushless);
         m_encoder = m_motor.getEncoder();
@@ -145,7 +145,7 @@ public class Spark
         double max = SmartDashboard.getNumber("Max Output" + deviceid, 0);
         double min = SmartDashboard.getNumber("Min Output" + deviceid, 0);
     
-        
+    double previousSetPoint = setPoint;
 
 
         if (p != kP) {
@@ -172,13 +172,13 @@ public class Spark
             m_pidController.setOutputRange(min, max);
             kMinOutput = min;
             kMaxOutput = max;
-        }
+        }     
 
-        if(getY == 0){
-           m_pidController.setIAccum(0);
-        }       
+        setPoint = getY * maxRPM;
 
-        double setPoint = getY * maxRPM;
+        //if((previousSetPoint < 0 && setPoint > 0) ||( previousSetPoint > 0 && setPoint < 0 )|| setPoint == 0){
+          //  m_pidController.setIAccum(0);
+        //}
 
         m_pidController.setReference(setPoint, ControlType.kVelocity);
         SmartDashboard.putNumber("SetPoint" + deviceid, setPoint);

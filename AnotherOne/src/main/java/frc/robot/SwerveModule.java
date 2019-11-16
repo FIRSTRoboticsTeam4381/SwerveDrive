@@ -16,20 +16,22 @@ public class SwerveModule implements edu.wpi.first.wpilibj.PIDSource
     private double rotation;
     private PIDOutput output;
     private double max = 0.8;
-
+    public double y2 = 0;
+    public double y1 = 0;
     public SwerveModule( int deviceID1,  int deviceID2)  {
         one = new Spark(deviceID1);
         two = new Spark(deviceID2);
         one.setPIDcoefficients();
         two.setPIDcoefficients();
+        
         pidControl = new PIDController(Kp, Ki, Kd, this, this::SetRotation);
         pidControl.setInputRange(0, 360);
         pidControl.setOutputRange(-1, 1);
-        pidControl.setContinuous();
-        pidControl.setAbsoluteTolerance(0.1);
+        pidControl.setContinuous(true);
+        pidControl.setAbsoluteTolerance(2);
         pidControl.setSetpoint(0);
         pidControl.reset();
-        pidControl.enable();
+        //pidControl.enable();
         
         //one.setTurnPIDcoefficients();
         //two.setTurnPIDcoefficients();
@@ -40,6 +42,9 @@ public class SwerveModule implements edu.wpi.first.wpilibj.PIDSource
       }
 
     public void angle(double angle){
+        if(angle < 0){
+            angle = 0;
+        }
         pidControl.setSetpoint(angle);
     }
 
@@ -70,6 +75,11 @@ public class SwerveModule implements edu.wpi.first.wpilibj.PIDSource
     public double getAngle(Spark one, Spark two){
         double diff = one.ticks() + two.ticks();
         diff = (diff % 10) * 36;
+
+        if(diff < 0){
+            diff = diff + 360;
+        }
+
         return diff;
     }
 
@@ -80,7 +90,7 @@ public class SwerveModule implements edu.wpi.first.wpilibj.PIDSource
 
     @Override
     public PIDSourceType getPIDSourceType() {
-        return PIDSourceType.kRate;
+        return PIDSourceType.kDisplacement;
     }
 
     @Override
@@ -88,38 +98,17 @@ public class SwerveModule implements edu.wpi.first.wpilibj.PIDSource
         return getAngle(one, two);
     }
     
-    public double getY1(double mainY, double targetAngle){
-        double y1 = 0;
-        double y2 = 0;
-        
-        if(targetAngle != -1){
-            y2 = (mainY*max) + rotation;
-            y1 = mainY*max;
-        }else{
-            y1 = mainY*max;
-            y2 = mainY*max;
-        }
-        
+    public void getYs(double mainY, double targetAngle){
 
-        return y1;
+        if(targetAngle != -1){
+            y2 = (mainY) + rotation;
+            y1 = mainY;
+        }else{
+            y1 = mainY;
+            y2 = mainY;
+        }
 
     }
 
-    public double getY2(double mainY, double targetAngle){
-        double y1 = 0;
-        double y2 = 0;
-
-        
-        if(targetAngle != -1){
-            y2 = (mainY*max) + rotation;
-            y1 = mainY*max;
-        }else{
-            y1 = mainY*max;
-            y2 = mainY*max;
-        }
-
-        return y2;
-
-    }
 
     }
